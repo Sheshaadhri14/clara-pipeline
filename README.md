@@ -127,6 +127,15 @@ python scripts/batch_run.py data
 
 ---
 
+docker run -it --rm `
+  --name n8n `
+  -p 5678:5678 `
+  -e N8N_RUNNERS_ENABLED=true `
+  -e N8N_BLOCK_ENV_ACCESS_IN_NODE=false `
+  -e GEMINI_API_KEY=YOUR_GEMINI_KEY `
+  -v n8n_data:/home/node/.n8n `
+  docker.n8n.io/n8nio/n8n
+
 ## How To Plug In The Dataset
 
 1. Put all transcript files in the `/data` folder
