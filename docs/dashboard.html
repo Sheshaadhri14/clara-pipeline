@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Clara Pipeline Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #222536;
+    --border: #2e3250;
+    --accent: #00d9a3;
+    --blue: #4f8fff;
+    --warn: #ffb347;
+    --danger: #ff5c5c;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+
+  
+  header {
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+  }
+  .logo { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+  .logo-icon { background: var(--accent); color: #000; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .status { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  
+  .layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 61px); }
+
+  
+  aside { background: var(--surface); border-right: 1px solid var(--border); padding: 20px 0; }
+  .nav-label { font-size: 10px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; padding: 0 20px; margin-bottom: 8px; margin-top: 16px; }
+  .nav-item { padding: 9px 20px; cursor: pointer; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; transition: all .15s; border-left: 3px solid transparent; }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: rgba(0,217,163,.08); color: var(--accent); border-left-color: var(--accent); }
+  .account-item { padding: 8px 20px; cursor: pointer; font-size: 12px; color: var(--muted); transition: all .15s; display: flex; justify-content: space-between; align-items: center; }
+  .account-item:hover { background: var(--surface2); color: var(--text); }
+  .account-item.selected { background: rgba(79,143,255,.08); color: var(--blue); }
+  .badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; }
+  .badge.v1 { background: rgba(255,179,71,.15); color: var(--warn); }
+  .badge.v2 { background: rgba(0,217,163,.15); color: var(--accent); }
+
+  
+  main { padding: 28px 32px; overflow-y: auto; }
+
+  
+  .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 28px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; }
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+  .stat-value { font-size: 28px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .stat-value.green { color: var(--accent); }
+  .stat-value.blue { color: var(--blue); }
+  .stat-value.orange { color: var(--warn); }
+  .stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 18px; }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+  
+  .field-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .field-row:last-child { border-bottom: none; }
+  .field-label { color: var(--muted); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  .field-value { font-weight: 500; text-align: right; max-width: 60%; }
+  .field-value.code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); }
+  .field-value.null { color: var(--muted); font-style: italic; font-size: 11px; }
+
+  
+  .diff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 18px; }
+  .diff-header { padding: 12px 18px; font-size: 12px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+  .diff-header.v1 { background: rgba(255,92,92,.06); color: var(--danger); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .diff-header.v2 { background: rgba(0,217,163,.06); color: var(--accent); border-bottom: 1px solid var(--border); }
+  .diff-row { display: contents; }
+  .diff-cell { padding: 9px 18px; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.6; border-bottom: 1px solid var(--border); }
+  .diff-cell.left { border-right: 1px solid var(--border); }
+  .diff-cell.changed-old { background: rgba(255,92,92,.06); color: #ff8080; }
+  .diff-cell.changed-new { background: rgba(0,217,163,.06); color: var(--accent); }
+  .diff-cell.label { background: var(--surface2); color: var(--muted); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; padding: 5px 18px; }
+
+  
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-family: 'JetBrains Mono', monospace; margin: 2px; }
+  .tag.service { background: rgba(79,143,255,.1); color: var(--blue); }
+  .tag.emergency { background: rgba(255,92,92,.1); color: var(--danger); }
+  .tag.unknown { background: rgba(255,179,71,.1); color: var(--warn); }
+
+  
+  .prompt-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 18px; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.8; white-space: pre-wrap; max-height: 360px; overflow-y: auto; color: #a0b0c8; margin-top: 12px; }
+  .prompt-box .ph { color: var(--accent); }
+  .prompt-box .ps { color: var(--blue); }
+  .prompt-box .pr { color: var(--warn); }
+
+  
+  .change-item { border-left: 3px solid var(--accent); padding: 10px 14px; background: var(--surface2); border-radius: 0 8px 8px 0; margin-bottom: 8px; }
+  .change-field { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); margin-bottom: 4px; }
+  .change-from { color: var(--danger); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  .change-to { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+  
+  .unknown-item { display: flex; gap: 10px; padding: 8px 12px; background: rgba(255,179,71,.06); border: 1px solid rgba(255,179,71,.2); border-radius: 8px; font-size: 12px; margin-bottom: 6px; }
+
+  
+  .tabs { display: flex; gap: 2px; background: var(--surface2); border-radius: 8px; padding: 3px; width: fit-content; margin-bottom: 16px; }
+  .tab { padding: 6px 16px; border-radius: 6px; font-size: 12px; cursor: pointer; color: var(--muted); transition: all .15s; }
+  .tab.active { background: var(--surface); color: var(--text); }
+
+  
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  .fade { animation: fadeIn .25s ease; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🎙</div>
+    Clara Pipeline
+  </div>
+  <div class="status">
+    <div class="dot"></div>
+    Pipeline Active
+  </div>
+</header>
+
+<div class="layout">
+  <aside>
+    <div class="nav-label">Views</div>
+    <div class="nav-item active" onclick="showView('overview')">📊 Overview</div>
+    <div class="nav-item" onclick="showView('account')">🏢 Account Detail</div>
+    <div class="nav-item" onclick="showView('diff')">🔀 Diff Viewer</div>
+    <div class="nav-item" onclick="showView('changelog')">📋 Changelog</div>
+
+    <div class="nav-label">Accounts</div>
+    <div id="accountList"></div>
+  </aside>
+
+  <main id="mainContent"></main>
+</div>
+
+<script>
+
+const ACCOUNTS = [
+  {
+    id: "ben-s-electrical-solutio-bdce",
+    company: "Ben's Electric Solutions",
+    industry: "Electrical",
+    hasV1: true,
+    hasV2: true,
+    v1: {
+      business_hours: { days: null, start: null, end: null, timezone: null },
+      office_address: null,
+      services: ["electrical service calls", "quotes and estimates"],
+      emergencies: [],
+      emergency_contact: "Ben",
+      emergency_phone: null,
+      pricing: { fee: null, hourly: null },
+      special_clients: [],
+      unknowns: [
+        "Business hours not confirmed",
+        "Emergency phone number not provided",
+        "Pricing not discussed",
+        "Notification email not provided"
+      ],
+      notes: "Demo call only. Many details still missing."
+    },
+    v2: {
+      business_hours: { days: "Monday-Friday", start: null, end: null, timezone: null },
+      office_address: null,
+      services: ["New client inquiries", "Service calls", "Scheduling", "Quote inquiries"],
+      emergencies: ["GNM Pressure Washing after hours emergency calls"],
+      emergency_contact: "Ben",
+      emergency_phone: "Ben's second number (pending)",
+      pricing: { fee: "$115 callout", hourly: "$98/hr residential" },
+      special_clients: ["GNM Pressure Washing (Chevron/Esso gas stations, ~20 locations)"],
+      unknowns: [
+        "Business hours start/end not stated",
+        "Ben's second phone number pending",
+        "Transfer timeout not specified"
+      ],
+      notes: "Onboarding complete. Second number still pending."
+    },
+    changes: [
+      { field: "services_supported", action: "items_added", added: ["New client inquiries", "Service calls", "Scheduling", "Quote inquiries"] },
+      { field: "emergency_definition", action: "items_added", added: ["GNM Pressure Washing after hours emergency"] },
+      { field: "special_clients", action: "items_added", added: ["GNM Pressure Washing"] },
+      { field: "pricing.service_call_fee", from: "null", to: "$115 callout fee" },
+      { field: "pricing.hourly_rate", from: "null", to: "$98/hr residential" },
+      { field: "notification_preferences.email", from: "null", to: "info@benselectricalsolutionsteam.com" },
+      { field: "after_hours_flow_summary", from: "null", to: "No emergency dispatch except GNM Pressure Washing" },
+      { field: "office_hours_flow_summary", from: "null", to: "Ben handles calls, Clara as first contact" }
+    ]
+  }
+];
+
+let currentAccount = ACCOUNTS[0];
+let currentView = 'overview';
+
+function renderSidebar() {
+  document.getElementById('accountList').innerHTML = ACCOUNTS.map(a => `
+    <div class="account-item ${a.id === currentAccount.id ? 'selected' : ''}"
+         onclick="selectAccount('${a.id}')">
+      <span>${a.company}</span>
+      <span>
+        ${a.hasV1 ? '<span class="badge v1">v1</span>' : ''}
+        ${a.hasV2 ? '<span class="badge v2">v2</span>' : ''}
+      </span>
+    </div>
+  `).join('');
+}
+
+function selectAccount(id) {
+  currentAccount = ACCOUNTS.find(a => a.id === id);
+  renderSidebar();
+  renderCurrentView();
+}
+
+function showView(view) {
+  currentView = view;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  event.target.classList.add('active');
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  const renders = {
+    overview: renderOverview,
+    account: renderAccount,
+    diff: renderDiff,
+    changelog: renderChangelog
+  };
+  renders[currentView]?.();
+}
+
+function renderOverview() {
+  const total = ACCOUNTS.length;
+  const v2Count = ACCOUNTS.filter(a => a.hasV2).length;
+  const unknowns = ACCOUNTS.reduce((s,a) => s + (a.v2||a.v1).unknowns.length, 0);
+  const changes = ACCOUNTS.reduce((s,a) => s + a.changes.length, 0);
+
+  document.getElementById('mainContent').innerHTML = `
+    <div class="fade">
+      <div style="margin-bottom:24px">
+        <div style="font-size:20px;font-weight:700;margin-bottom:4px">Pipeline Overview</div>
+        <div style="color:var(--muted);font-size:13px">Demo → Agent v1 → Onboarding → Agent v2</div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Accounts</div>
+          <div class="stat-value blue">${total}</div>
+          <div class="stat-sub">in pipeline</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Onboarded</div>
+          <div class="stat-value green">${v2Count}</div>
+          <div class="stat-sub">v2 ready</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Open Questions</div>
+          <div class="stat-value orange">${unknowns}</div>
+          <div class="stat-sub">need clarification</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Total Changes</div>
+          <div class="stat-value">${changes}</div>
+          <div class="stat-sub">v1→v2 updates</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔄 Pipeline Flow</div>
+        <div style="display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:12px;flex-wrap:wrap">
+          ${['Audio/Video','→','Whisper','→','Transcript','→','Gemini Extract','→','Memo JSON','→','Agent Spec v1','→','Onboarding','→','Merge + Diff','→','Agent Spec v2','→','Changelog'].map(s =>
+            s === '→'
+              ? `<span style="color:var(--border)">${s}</span>`
+              : `<span style="background:var(--surface2);border:1px solid var(--border);padding:4px 10px;border-radius:6px">${s}</span>`
+          ).join('')}
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px;font-size:14px;font-weight:600">Accounts</div>
+      ${ACCOUNTS.map(a => `
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;margin-bottom:10px;transition:border-color .15s"
+             onclick="selectAccount('${a.id}');showView('account')"
+             onmouseover="this.style.borderColor='var(--accent)'"
+             onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:28px">⚡</div>
+          <div style="flex:1">
+            <div style="font-weight:600">${a.company}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px">${a.id}</div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            ${a.hasV1 ? '<span class="badge v1" style="padding:4px 10px">v1</span>' : ''}
+            ${a.hasV2 ? '<span class="badge v2" style="padding:4px 10px">v2</span>' : '<span style="color:var(--warn);font-size:11px">⏳ awaiting onboarding</span>'}
+            ${(a.v2||a.v1).unknowns.length > 0
+              ? `<span style="background:rgba(255,179,71,.1);color:var(--warn);font-size:10px;padding:3px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace">⚠ ${(a.v2||a.v1).unknowns.length} unknown</span>`
+              : '<span style="background:rgba(0,217,163,.1);color:var(--accent);font-size:10px;padding:3px 8px;border-radius:4px">✓ clean</span>'
+            }
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderAccount() {
+  const a = currentAccount;
+  const d = a.v2 || a.v1;
+
+  document.getElementById('mainContent').innerHTML = `
+    <div class="fade">
+      <div style="margin-bottom:24px">
+        <div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:4px">ACCOUNT DETAIL</div>
+        <div style="font-size:20px;font-weight:700">${a.company}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px">${a.id}</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+        <div class="card">
+          <div class="card-title">🕐 Business Hours</div>
+          <div class="field-row">
+            <span class="field-label">days</span>
+            <span class="field-value ${!d.business_hours.days?'null':''}">${d.business_hours.days||'not specified'}</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">start</span>
+            <span class="field-value ${!d.business_hours.start?'null':''}">${d.business_hours.start||'not specified'}</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">end</span>
+            <span class="field-value ${!d.business_hours.end?'null':''}">${d.business_hours.end||'not specified'}</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">timezone</span>
+            <span class="field-value ${!d.business_hours.timezone?'null':''}">${d.business_hours.timezone||'not specified'}</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🚨 Emergency Routing</div>
+          <div class="field-row">
+            <span class="field-label">contact</span>
+            <span class="field-value">${d.emergency_contact||'unknown'}</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">phone</span>
+            <span class="field-value code">${d.emergency_phone||'not provided'}</span>
+          </div>
+          <div class="field-row">
+            <span class="field-label">pricing</span>
+            <span class="field-value">${d.pricing?.fee||'not stated'}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🛠 Services</div>
+        ${(d.services||[]).map(s=>`<span class="tag service">${s}</span>`).join('')}
+      </div>
+
+      ${d.emergencies?.length ? `
+      <div class="card">
+        <div class="card-title">🔴 Emergency Triggers</div>
+        ${d.emergencies.map(e=>`<span class="tag emergency">⚡ ${e}</span>`).join('')}
+      </div>` : ''}
+
+      ${d.unknowns?.length ? `
+      <div class="card">
+        <div class="card-title">⚠ Open Questions (${d.unknowns.length})</div>
+        ${d.unknowns.map(u=>`
+          <div class="unknown-item">
+            <span style="color:var(--warn)">❓</span>
+            <span>${u}</span>
+          </div>
+        `).join('')}
+      </div>` : `
+      <div style="padding:14px 18px;background:rgba(0,217,163,.06);border:1px solid rgba(0,217,163,.2);border-radius:10px;margin-bottom:14px;font-size:13px;color:var(--accent)">
+        ✅ No open questions — fully configured
+      </div>`}
+    </div>
+  `;
+}
+
+function renderDiff() {
+  const a = currentAccount;
+  if (!a.hasV2) {
+    document.getElementById('mainContent').innerHTML = `
+      <div class="fade" style="text-align:center;padding:80px">
+        <div style="font-size:48px;margin-bottom:16px">⏳</div>
+        <div style="font-size:18px;font-weight:600;margin-bottom:8px">No v2 yet</div>
+        <div style="color:var(--muted)">Awaiting onboarding call</div>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('mainContent').innerHTML = `
+    <div class="fade">
+      <div style="margin-bottom:24px">
+        <div style="font-size:20px;font-weight:700;margin-bottom:4px">Diff Viewer</div>
+        <div style="color:var(--muted);font-size:13px">${a.changes.length} changes from v1 → v2</div>
+      </div>
+
+      <div class="diff-grid">
+        <div class="diff-header v1">⬡ v1 — Demo (assumptions)</div>
+        <div class="diff-header v2">✓ v2 — Onboarding (confirmed)</div>
+
+        <div class="diff-cell label left">services</div>
+        <div class="diff-cell label">services</div>
+
+        <div class="diff-cell left changed-old">electrical service calls, quotes</div>
+        <div class="diff-cell changed-new">+ New client inquiries, Service calls, Scheduling, Quote inquiries</div>
+
+        <div class="diff-cell label left">emergency triggers</div>
+        <div class="diff-cell label">emergency triggers</div>
+
+        <div class="diff-cell left changed-old">none defined</div>
+        <div class="diff-cell changed-new">GNM Pressure Washing after hours</div>
+
+        <div class="diff-cell label left">pricing</div>
+        <div class="diff-cell label">pricing</div>
+
+        <div class="diff-cell left changed-old">null — not discussed</div>
+        <div class="diff-cell changed-new">$115 callout + $98/hr residential</div>
+
+        <div class="diff-cell label left">notification email</div>
+        <div class="diff-cell label">notification email</div>
+
+        <div class="diff-cell left changed-old">null</div>
+        <div class="diff-cell changed-new">info@benselectricalsolutionsteam.com</div>
+
+        <div class="diff-cell label left">open questions</div>
+        <div class="diff-cell label">open questions</div>
+
+        <div class="diff-cell left changed-old">4 unknowns</div>
+        <div class="diff-cell changed-new">3 remaining (second number still pending)</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderChangelog() {
+  const a = currentAccount;
+
+  document.getElementById('mainContent').innerHTML = `
+    <div class="fade">
+      <div style="margin-bottom:24px">
+        <div style="font-size:20px;font-weight:700;margin-bottom:4px">Changelog</div>
+        <div style="color:var(--muted);font-size:13px">${a.changes.length} changes applied — v1 → v2</div>
+      </div>
+
+      ${a.changes.map((c,i) => `
+        <div class="change-item">
+          <div class="change-field">${i+1}. ${c.field}</div>
+          ${c.action === 'items_added'
+            ? `<div style="color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:11px">+ added: ${c.added.join(', ')}</div>`
+            : `<div class="change-from">FROM: ${c.from}</div>
+               <div class="change-to">TO: ${c.to}</div>`
+          }
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+renderSidebar();
+renderOverview();
+</script>
+</body>
+</html>
