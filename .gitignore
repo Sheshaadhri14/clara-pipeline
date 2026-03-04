@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 outputs/
 myvenv/
+echo data/*.mp4 >> .gitignore
+echo data/*.m4a >> .gitignore
