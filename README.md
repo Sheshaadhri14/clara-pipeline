@@ -58,7 +58,7 @@ clara-pipeline/
 
 ### 1. Clone the repo
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Sheshaadhri14/clara-pipeline.git
 cd clara-pipeline
 ```
 
