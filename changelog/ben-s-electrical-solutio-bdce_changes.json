@@ -1,0 +1,110 @@
+{
+  "account_id": "ben-s-electrical-solutio-bdce",
+  "company_name": "Ben's Electrical Solutions Team",
+  "generated_at": "2026-03-04T17:49:16.584715",
+  "total_changes": 14,
+  "changes": [
+    {
+      "field": "company_name",
+      "from": "Ben's Electric Solutions",
+      "to": "Ben's Electrical Solutions Team",
+      "source": "onboarding"
+    },
+    {
+      "field": "services_supported",
+      "action": "items_added",
+      "added": [
+        "New client inquiries",
+        "Small job inquiries",
+        "Service call inquiries",
+        "Inquiries from non-existing clients",
+        "Appointment scheduling",
+        "Quote inquiries"
+      ],
+      "source": "onboarding"
+    },
+    {
+      "field": "emergency_definition",
+      "action": "items_added",
+      "added": [
+        "Calls from GNM Pressure Washing (property management company) concerning managed properties (Chevron and Esso gas stations) after hours"
+      ],
+      "source": "onboarding"
+    },
+    {
+      "field": "non_emergency_routing_rules.action",
+      "from": "Collect details and call back",
+      "to": "Clara handles initial calls and can transfer to a human agent",
+      "source": "onboarding"
+    },
+    {
+      "field": "non_emergency_routing_rules.details",
+      "from": null,
+      "to": "Initially, calls are forwarded to Clara if Ben doesn't answer or declines on his main Android phone. Once Ben's second number is active, Clara will be the first point of contact and can transfer callers to that second number if they need to speak to a human.",
+      "source": "onboarding"
+    },
+    {
+      "field": "special_clients",
+      "action": "items_added",
+      "added": [
+        "Existing builders",
+        "GNM Pressure Washing (property management company managing Chevron and Esso gas stations)"
+      ],
+      "source": "onboarding"
+    },
+    {
+      "field": "pricing.service_call_fee",
+      "from": null,
+      "to": "$115 (includes call out and first half hour of labor)",
+      "source": "onboarding"
+    },
+    {
+      "field": "pricing.hourly_rate",
+      "from": null,
+      "to": "$98 per hour (residential, charged in half-hour increments after the first half hour)",
+      "source": "onboarding"
+    },
+    {
+      "field": "pricing.mention_to_caller",
+      "from": null,
+      "to": "Only when asked by the caller",
+      "source": "onboarding"
+    },
+    {
+      "field": "notification_preferences.email",
+      "from": null,
+      "to": "info@benselectricalsolutionsteam.com",
+      "source": "onboarding"
+    },
+    {
+      "field": "after_hours_flow_summary",
+      "from": null,
+      "to": "Normally, no emergency calls or dispatch. For calls from GNM Pressure Washing concerning Chevron and Esso gas stations after hours, the call should be patched through to Ben.",
+      "source": "onboarding"
+    },
+    {
+      "field": "office_hours_flow_summary",
+      "from": null,
+      "to": "Ben is the sole recipient of incoming customer calls. Initially, calls are forwarded to Clara if Ben doesn't answer or declines on his main Android phone. Once a second phone number is established, Clara will be the primary contact point and can transfer calls to Ben's second number for direct human interaction. Clara should mention pricing details (service call fee and hourly rate) only when explicitly asked by the caller. Email and SMS notifications will be sent for new calls.",
+      "source": "onboarding"
+    },
+    {
+      "field": "questions_or_unknowns",
+      "action": "items_added",
+      "added": [
+        "Specific business hours (days, start, end, timezone).",
+        "Ben's specific phone number for emergency transfers (from GNM Pressure Washing).",
+        "Ben's specific phone number for SMS notifications.",
+        "The specific second phone number Ben plans to get for non-emergency transfers.",
+        "Further details on 'existing builders' for special client handling, if applicable."
+      ],
+      "source": "onboarding"
+    },
+    {
+      "field": "notes",
+      "from": "Demo call only. Many details still missing.",
+      "to": "Ben is in the process of setting up a second phone line for personal use, at which point his current number will primarily serve as his business line. Clara's call forwarding is currently set up such that calls to Ben's main Android line are forwarded to Clara if unanswered or declined. Clara can be turned off/on as needed. Ben's current number is unaffected for outbound calls and text messages. The initial agreement term is 3 months, after which the price remains the same for a 12-month term if the service continues.",
+      "source": "onboarding"
+    }
+  ]
+}

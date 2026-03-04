@@ -1,0 +1,171 @@
+
+---
+
+## **Audio Transcript**
+
+**Speaker 1:** Just give me a second. We'll... let Ben in. Okay, so Naveen's... can I change his name to... actually, going forward Naveen, if you can put Clara's display picture, that'll be helpful. Clara Support, I'm changing your name. And... okay, cool. I'll let him in. Pavans, we good? Alright, letting him in in three, two, one and Ben is in. Very sweet guy, by the way. He's in. Hey Ben, good afternoon! Um... oh, wait. Oh, hey. Hi, good afternoon. Hey Ben, how are you?
+
+**Ben:** I'm doing well, how are you?
+
+**Speaker 1:** Very well, thank you so much for asking. Really, really excited to kick things off for you and... yeah, I mean, how have things been since the last time we spoke?
+
+**Ben:** Good, busy.
+
+**Speaker 1:** Busy. That's good.
+
+**Ben:** Busy's good for sure, so... it's been fun. Um... yeah, I just signed the... the DocuSign. Oh, okay. And it did look like it said, um... like a 12-month term and I think we were talking about three months to start.
+
+**Speaker 1:** Correct. So what it means there is that after the three months if you decide to continue, which I'm sure you will, the price will stay the same. So that's what that 12-month term meant... means. So you'll be good. It just helps you with the cost increase, yeah. So you've signed the DocuSign?
+
+**Ben:** Yeah.
+
+**Speaker 1:** Awesome. I think I'll be getting a notification from the billing team and I think the card that you probably... the details that you shared with me, that also might be in the process of getting executed. So I think we're good. But all that aside, I just wanted to introduce the... the new face that you can probably see on your screen, that's Pavan.
+
+**Ben:** Hello Pavan.
+
+**Pavan:** Hey Ben.
+
+**Speaker 1:** I wanted to get somebody who can... I mean, who understands things in and out and turns out Pavan's the one who started the whole journey of Clara Answers so he's somebody who's very deeply knitted into this program, this solution, so he'll match your pace, understand your expectations and of course marry it and then present the solution to you. So he's going to be your dedicated point of contact, but if in... if any case, if at any point there has to be more people involved, we'll of course notify you and then we'll loop other people in as well.
+
+**Ben:** Okay, sounds good.
+
+**Speaker 1:** That said, I'll let Pavan take over and... yeah, we'll kick things off.
+
+**Pavan:** Yeah, thank you so much Bharat and yeah, Bharat is my hype man, right? You know, whenever... whenever I go in with all the intro. But yeah, I mean, super excited to get you started, Ben. I've got all the context of your business, what you're trying to solve with, you know, the first... solution here that is, you know, AI for answering for your business. I've got all the context from Bharat in the way you guys operate today. With that information, we already have the... you know, base variant of the agent configured. Just one... just a couple of details, you know, some details that I wanted to clarify so that we can complete that configuration and make the agent available for your testing today itself, right? That'll be the target. The way the process would look like as well is we'll share the number on which the agent will be available and the dashboard as well so that, you know, you can run some test calls, see how the agent is responding, all of that you... after this call, we'll... I'll share that detail with you by making those final configurations and then post that, we can probably set up another call for Friday if you have some time because you get this one day to really test and, you know, run some test calls, see if you'd want anything changed. And then... you know, we can probably, you know, have the agent take live calls this weekend, right?
+
+**Ben:** Okay.
+
+**Pavan:** So firstly to... I mean, get an understanding, we'll divide the conversation into during office hours and after hours just to get the behavior that we'd want to have for the agent. So for during office hours, Ben, is it only you who takes all the incoming calls from customers or is there anyone else as well?
+
+**Ben:** No, right now it's just me. Yeah. So we have... we have some steady, like contractors, and they have the phone numbers for some of my team, so they can talk directly... for the... to the guys in the field, but generally like what I need this for is the new clients, the small jobs, the service calls, people that call every day that we don't have a... already working relationship with. So... but anyways, yeah, it's me that takes those calls.
+
+**Pavan:** Okay, makes sense. And then... so when Clara will be set up, the way it'll be set up is your main business line today, by default the forwarding will be set up from there to Clara. So... you know, we can start off with... so what I understand from Bharat is you only have one number and that is your personal number, that is your business line, I think that... do you by any chance happen to have a second number?
+
+**Ben:** I do. I've got a... I was actually thinking about this a while ago, so I actually have another phone with a phone line that I'm going to use for personal. Um... yeah, I just have to get it going and tell all my contacts my new number.
+
+**Pavan:** Perfect.
+
+**Ben:** Yeah, so... um, I was going to say, like, can I turn... until I get that done, am I able to turn Clara off and on as needed kind of thing or... oh, cool.
+
+**Pavan:** Yes. So the way then we can set... the way we can set it up is, you know, on your phone... do you use a iOS device like an Apple device or an Android?
+
+**Ben:** Uh, Android.
+
+**Pavan:** Perfect. That... that makes it even easier because you can really set some... you know, the way we can start off is on your phone you can set up the call forwarding in a way where if you do not answer the call or if you decline the call, then we can forward the calls to Clara. So in that... in that way we can start off like that until you have the second number up and running. Once the second number is up, then, you know, we can have Clara be the first point of contact and then if someone wants to talk to you or... you know, then... then we can transfer it to the second number.
+
+**Ben:** Oh, I was actually going to ask that today, so Clara can transfer if somebody really needs to talk to me, Clara can transfer that call?
+
+**Pavan:** Yes. That's where... that's where we'll need that second number, that's why...
+
+**Ben:** Oh, gotcha. Okay.
+
+**Pavan:** Yep. So that is possible. Cool. So when the second number is up and running, probably that is one number that I'll need from you. You can just... I'll send my... I'll send the details of the agent on the email so you can reply to that. I'll include these pointers as well so that we can... so for office hours, that is one. And then for anyone who's calling to probably schedule an appointment or is inquiring about a quote... do you have any minimum... like a visit fee that you'd charge if you have to ever give out an estimate?
+
+**Ben:** Yeah, our structure is set up like for service calls... we do have a service call fee which is $115. That's a call out, which is what gets us to the job site, and then our hourly charge is in half-hour increments after that... at the hourly rate of $98 an hour for a residential.
+
+**Pavan:** Okay, is it 98 or 90?
+
+**Ben:** 98. Per hour, which for half hour is going to be of course 49.
+
+**Pavan:** Yep. Cool. And then for the initial 115, so for that... do you have a... like does that cover for the first one hour, two hours or anything like that?
+
+**Ben:** Oh, that's just the call out to get to site. Okay. And then... okay, so basically it's $150 for the first half hour or... 100 and... oh, okay, yeah, there's what... okay, for the first... first half hour it's the initial call out fee and then every half hour increments from there. Perfect, makes sense. So because... and do you want Clara to mention that on the call or shall we start off with not mentioning and you want to take that call subjectively based on... because some calls you might...
+
+**Ben:** Yeah, I... most of the time I've definitely learned that people need to know about that before we... before we book the job. Um, so when people ask, I do want Clara to be able to mention that.
+
+**Pavan:** Okay. Only if they want to clarify will mention, but we'll not make it a point to mention on every call?
+
+**Ben:** I think so, yeah. I mean, I guess Clara's actually speaks better than I do. Sorry, I'm trying to... mute my phone right now, I've got a whole bunch of notifications coming in here. Um... I double-booked myself, I actually have a flat tire and I've got a mobile tire repair guy right now... excuse me one quick second, he's just outside my door. Sorry guys! Yes, yes, no problem.
+
+*(Brief pause while Ben steps away)*
+
+**Ben:** Sorry guys, I just gotta pay this guy. Be right back.
+
+*(Brief pause while Ben steps away)*
+
+**Ben:** Oh, so sorry guys! Sorry, sorry, sorry.
+
+**Pavan:** No problem, no problem.
+
+**Ben:** How you doing that? Sorry, sorry Pavan, carry on.
+
+**Pavan:** No problem at all. So we were talking about service call fee and we'll only include, you know, we'll not make it a point to mention it on all calls but, you know, we'll have... we'll have that information and when people ask for if there is a minimum fee or anything of that nature, right?
+
+**Ben:** Yeah.
+
+**Pavan:** Cool. And then for everything else, yeah, I think everything else is clear from the website already, so we'll start off there, but, you know, we can... any day as the calls come in, you know, we can make changes. It's not like very rigid in that way. So if you'd want to include some policies or, you know, if you'd want a specific type of calls handled a little differently, all of that we can... you know, take it up when as and when they pop up. Okay, so that was one. The other one is, so we can send out a notification whenever there is a new call. So do you have a preferred email address and a phone number? So that we can have the email and then the SMS sent?
+
+**Ben:** Yeah, um... let me just think here. Probably the best one... info@benselectricalsolutionsteam.com.
+
+**Pavan:** Okay. So just so that I don't get the spelling wrong here, will it be possible to drop that in the chat? And then... yeah, sure. It's basically the same as... if you have my email address, it's the same, it's just info. Info instead of Ben, yeah. But I will write it down for you. Yep, I'll get that from there.
+
+**Ben:** Okay.
+
+**Pavan:** Cool. And then the number on which you... so the main line that you're using, we'll use the same number to send the SMS?
+
+**Ben:** Um, the same number to send which, sorry?
+
+**Pavan:** So we'll send the post call... like whenever there is a new call from the customer, you'll get an SMS as well saying...
+
+**Ben:** Oh, yeah! Yeah, actually I was going to ask about that too, if it affects text messages or not, but probably not. Oh, okay. Okay.
+
+**Pavan:** So we'll have both the email and text message set up on that number.
+
+**Ben:** Okay, perfect. And so... um, yeah, if people are text messaging me on this phone, that's not going to... I'll get those text messages right away, right?
+
+**Pavan:** Yes. Your phone... the main line it'll be working fine on... like only the incoming calls are getting forwarded to Clara, but everything... the you can make outbound calls using your number, you can text back and forth, all of that is still... you know, pretty much the same.
+
+**Ben:** Perfect. Okay, excellent.
+
+**Pavan:** Exactly. So that is with the office hours, but coming to after hours, Ben, do you do any kind of dispatch for after hours?
+
+**Ben:** No, we don't do... emergency calls, nothing.
+
+**Pavan:** Nothing.
+
+**Ben:** Except for, you know, our existing builders and I've got one property manager... um, that sometimes they've got some... they've got gas stations that are running 24/7. So... short answer is no, but yes for one particular company.
+
+**Pavan:** Okay. So if you have that one particular company, if you can help me with the details of that company, what we can do is, you know, if a call... if someone from that property calls for an emergency after hours, then, you know, we can patch it through to you.
+
+**Ben:** Oh, okay! So you can actually select one number that's allowed to get patched through?
+
+**Pavan:** Yeah, it's more... yeah, we can use that number or even if you give me the context of the property because you don't know who will be calling from that property, right? That's true. So you can just... if you can just give me the details of, yes, the customer name, address... if you have that handy you can drop that in the chat, but even if you...
+
+**Ben:** Yeah, okay. So just the details, customer name, property name, their address, primary contact... I've got it right here in my phone, give me one moment. Um... actually... okay, so I'll put it in the chat. It's weird, it's a property manager but they also do a lot of... pressure washing and landscaping, so the company is actually called... GNM Pressure Washing, but they're property management.
+
+**Pavan:** I think they can use Clara as well.
+
+**Ben:** Yeah, they probably could. Um...
+
+**Pavan:** Did you say you need their email address as well?
+
+**Ben:** Yeah, I mean any... any information that you already have so that when they call, we'd... if they mention "hey I'm Shelley", you know, "or this is the number" or, you know, if someone else is calling as well and they say "hey this is from... GNM Pressure Wash"...
+
+**Pavan:** Yeah, there they... okay, how is this... see if I can... copy it here.
+
+**Ben:** But GNM... so just one question there, Ben, so GNM is the property management company but the property... okay. Is it a specific property under them for which they would call for emergencies or is it their facility itself?
+
+**Ben:** No, it's properties that they manage. So it's... um, gas stations. So we... we do work for them, they... they manage... Chevron... Chevron and Esso.
+
+**Pavan:** Okay. So when they call... do they... I think they'll be giving you the gas station details, right?
+
+**Ben:** Yes, yes. She'll... she'll normally... jeez, I've had a couple... a couple calls in the middle of the night and... um, she'll usually message me or... yeah, she'll tell me the details and she'll send me a text message as well. So she generally will give all of that information. Um... because yeah there's several... there's several properties about 20 gas stations, you know, around the city that we work in.
+
+**Pavan:** Yep. You probably have to just let her know "hey I'm trying this, you know, new answering service out, so you can just call in and drop all the context in, I'll... I'll be there, the call will be patched through right to me."
+
+**Ben:** Sure. Okay, perfect. I like it.
+
+**Pavan:** Cool and we'll have the testing piece taken care of in the following conversations and should everything go well, we can get things up and running for you.
+
+**Ben:** That'd be great. I like it.
+
+**Pavan:** Cool then. Yeah, just watch out for my email there, Ben. I'll drop the details of the agent, the number which you can dial to talk to the agent. Nothing is live yet, so you can directly call that number, have a conversation, see how the agent responds, and you know see the post-call workflow in that way as well. But yeah, that was all I had from my side. Thank you so much for your time, Ben. But yeah, over to you, Bharat.
+
+**Speaker 1:** Yeah, thanks. Everything goes... looks... I'll... I'll see you, Ben. Just watch out my... watch out for my email.
+
+**Ben:** Thank you, Pavan.
+
+**Pavan:** Yeah, thank you.
+
+---
+
