@@ -83,10 +83,18 @@ TRANSCRIPT:
 
 
 def generate_account_id(company_name: str) -> str:
-    slug = re.sub(r"[^a-z0-9]", "-", company_name.lower()).strip("-")[:24]
-    hash4 = hashlib.md5(company_name.encode()).hexdigest()[:4]
-    return f"{slug}-{hash4}"
-
+    """
+    Generate consistent account ID from company name.
+    Normalizes name first to handle slight variations.
+    """
+    normalized = company_name.lower()
+    normalized = re.sub(r'\b(team|inc|llc|ltd|co|corp|solutions|services)\b', '', normalized)
+    normalized = re.sub(r'[^a-z0-9]', '-', normalized)
+    normalized = re.sub(r'-+', '-', normalized)  # remove double dashes
+    normalized = normalized.strip('-')[:24]
+    
+    hash4 = hashlib.md5(normalized.encode()).hexdigest()[:4]
+    return f"{normalized}-{hash4}"
 
 def clean_json_response(text: str) -> dict:
     text = text.strip()
