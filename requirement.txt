@@ -1,3 +1,5 @@
 google-generativai
-openai-whisper
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+fastapi
+uvicorn
+python-dotenv
+edge-tts
