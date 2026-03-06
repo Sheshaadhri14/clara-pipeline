@@ -9,13 +9,22 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
-import google.generativeai as genai
 import edge_tts
 
 load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-1.5-flash")
 
+
+from google import genai
+
+API_KEY = os.getenv("GEMINI_API_KEY")
+if not API_KEY:
+    raise ValueError("GEMINI_API_KEY not found in environment variables.")
+
+client = genai.Client(api_key=API_KEY)
+
+MODEL_NAME = "gemini-2.5-flash"
+
+model = client.models
 app = FastAPI(title="Clara Pipeline API")
 
 app.add_middleware(
