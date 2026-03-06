@@ -1,4 +1,5 @@
-google-generativai
+google-genai  
+openai-whisper
 fastapi
 uvicorn
 python-dotenv
