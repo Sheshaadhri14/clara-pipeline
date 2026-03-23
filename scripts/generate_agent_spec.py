@@ -214,7 +214,66 @@ def generate_agent_spec(memo_path: str, version: str = "v1") -> dict:
     
     print(f"[OK] Agent spec saved to {out_path}")
     return spec
+import requests
 
+def create_retell_agent(spec: dict, api_key: str) -> dict:
+    
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    llm_payload = {
+        "model": "claude-4.5-sonnet",
+        "system_prompt": spec.get("system_prompt", ""),
+        "temperature": 0,
+        "max_tokens": 200
+    }
+
+    llm_response = requests.post(
+        "https://api.retellai.com/create-retell-llm",
+        headers=headers,
+        json=llm_payload
+    )
+
+    if llm_response.status_code not in (200, 201):
+        return {"success": False, "error": f"LLM creation failed: {llm_response.text}"}
+
+    llm_id = llm_response.json().get("llm_id")
+
+    # Step 2 — Create agent using that LLM
+    company_name = spec.get("key_variables", {}).get("company_name", "us")
+    
+    agent_payload = {
+        "agent_name": spec.get("agent_name", "Clara"),
+        "response_engine": {
+            "type": "retell-llm",
+            "llm_id": llm_id
+        },
+        "voice_id": "11labs-Adrian",
+        "language": "en-US",
+        "begin_message": f"Thank you for calling {company_name}, this is Clara. How can I help you today?"
+    }
+
+    agent_response = requests.post(
+        "https://api.retellai.com/create-agent",
+        headers=headers,
+        json=agent_payload
+    )
+
+    if agent_response.status_code not in (200, 201):
+        return {"success": False, "error": f"Agent creation failed: {agent_response.text}"}
+
+    agent_data = agent_response.json()
+    agent_id = agent_data.get("agent_id")
+
+    return {
+        "success": True,
+        "agent_id": agent_id,
+        "llm_id": llm_id,
+        "agent_name": agent_data.get("agent_name"),
+        "retell_url": f"https://app.retellai.com/agent/{agent_id}"
+    }
 
 if __name__ == "__main__":
     import sys
