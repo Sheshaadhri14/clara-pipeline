@@ -128,7 +128,6 @@
     <div class="nav-item" onclick="showView('account',this)">🏢 Account Detail</div>
     <div class="nav-item" onclick="showView('diff',this)">🔀 Diff Viewer</div>
     <div class="nav-item" onclick="showView('changelog',this)">📋 Changelog</div>
-    <div class="nav-item" onclick="showView('agent',this)">🎙 Live Agent</div>
     <div class="nav-label">Accounts</div>
     <div id="accountList"></div>
   </aside>
@@ -369,6 +368,7 @@ async function runPipeline() {
       ACCOUNTS.push({
         id: accountId,
         company: memo.company_name || data.company || 'Unknown Company',
+        retell_agent_id: data.retell?.agent_id || data.agent_id || null,
         hasV1: true,
         hasV2: false,
         v1: {
@@ -459,13 +459,14 @@ async function runPipeline() {
 // ── ACCOUNT DETAIL ────────────────────────────────────────────────────────
 function renderAccount() {
   const a = currentAccount, d = a.v2 || a.v1;
+  
   document.getElementById('mainContent').innerHTML = `
     <div class="fade">
       <div style="margin-bottom:24px">
         <div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:4px">ACCOUNT DETAIL</div>
         <div style="font-size:20px;font-weight:700">${a.company}</div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px">${a.id}</div>
-        ${a.retell_agent_id?`<a href="https://app.retellai.com/agent/${a.retell_agent_id}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);color:#a78bfa;padding:4px 12px;border-radius:6px;font-size:11px;text-decoration:none">🔗 View on Retell ↗</a>`:''}
+        ${a.retell_agent_id && a.retell_agent_id.startsWith('agent_')? `<a href="https://dashboard.retellai.com/agents/${a.retell_agent_id}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);color:#a78bfa;padding:4px 12px;border-radius:6px;font-size:11px;text-decoration:none">🔗 View on Retell ↗</a>`:''}
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
         <div class="card">
@@ -537,63 +538,6 @@ function renderChangelog() {
     </div>`;
 }
 
-// ── LIVE AGENT ────────────────────────────────────────────────────────────
-function renderAgent() {
-  agentHistory = [];
-  document.getElementById('mainContent').innerHTML = `
-    <div class="fade">
-      <div style="margin-bottom:24px">
-        <div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:4px">LIVE DEMO</div>
-        <div style="font-size:20px;font-weight:700;margin-bottom:4px">Talk To Clara</div>
-        <div style="color:var(--muted);font-size:13px">AI receptionist configured by this pipeline — live and working</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 260px;gap:16px">
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;display:flex;flex-direction:column;height:520px">
-          <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
-            <div style="width:36px;height:36px;background:linear-gradient(135deg,#7c3aed,#06b6d4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px">🎙</div>
-            <div>
-              <div style="font-weight:600;font-size:14px">Clara</div>
-              <div style="font-size:11px;color:var(--accent);display:flex;align-items:center;gap:4px"><div class="dot"></div>Online — Apex Home Services</div>
-            </div>
-          </div>
-          <div id="agentMessages" style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column">
-            <div style="display:flex;gap:8px;margin-bottom:12px">
-              <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px">🎙</div>
-              <div class="chat-bubble agent">Thank you for calling Apex Home Services, this is Clara. How can I help you today?</div>
-            </div>
-          </div>
-          <div style="padding:0 20px 8px">
-            <div id="agentTyping" style="display:none;gap:4px;padding:8px 12px;background:rgba(0,217,163,.08);border:1px solid rgba(0,217,163,.15);border-radius:10px;width:fit-content">
-              <span style="display:inline-block;width:5px;height:5px;background:var(--accent);border-radius:50%;animation:bounce .8s infinite"></span>
-              <span style="display:inline-block;width:5px;height:5px;background:var(--accent);border-radius:50%;animation:bounce .8s .15s infinite"></span>
-              <span style="display:inline-block;width:5px;height:5px;background:var(--accent);border-radius:50%;animation:bounce .8s .3s infinite"></span>
-            </div>
-          </div>
-          <div style="padding:14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end">
-            <button onclick="toggleAgentMic()" id="agentMicBtn" style="width:38px;height:38px;background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">🎤</button>
-            <textarea id="agentInput" placeholder="Type or use mic..." rows="1" onkeydown="agentKey(event)" oninput="agentResize(this)"
-              style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;font-family:inherit;resize:none;max-height:80px;outline:none"></textarea>
-            <button onclick="agentSend()" id="agentSendBtn" style="width:38px;height:38px;background:var(--accent);border:none;border-radius:8px;cursor:pointer;font-size:15px;color:#000;flex-shrink:0">➤</button>
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:12px">
-          <div class="card" style="padding:16px">
-            <div class="card-title">Config</div>
-            ${[['Company','Apex Home Services'],['Hours','Mon–Fri 8am–6pm'],['After Hours','🟢 Emergency only'],['Services','HVAC, Electrical, Plumbing'],['Version','🟢 v2 Onboarded']].map(([k,v])=>`<div class="field-row"><span class="field-label">${k}</span><span class="field-value" style="font-size:11px">${v}</span></div>`).join('')}
-          </div>
-          <div class="card" style="padding:16px">
-            <div class="card-title">Try These</div>
-            ${[['During Hours','My AC stopped working'],['Emergency','Basement flooding now!'],['Pricing','How much for a call?'],['Schedule','Book inspection next week']].map(([l,t])=>`
-              <button onclick="agentSend('${t}')"
-                style="width:100%;text-align:left;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--text);font-size:11px;cursor:pointer;margin-bottom:5px;font-family:inherit;transition:border-color .15s"
-                onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-                <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:1px">${l}</div>${t}
-              </button>`).join('')}
-          </div>
-        </div>
-      </div>
-    </div>`;
-}
 
 async function agentSend(text) {
   const input = document.getElementById('agentInput');
