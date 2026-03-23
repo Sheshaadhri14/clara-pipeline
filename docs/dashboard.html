@@ -330,76 +330,132 @@ async function runPipeline() {
 
   const btn = document.getElementById('runBtn');
   btn.disabled = true; btn.textContent = 'Running...';
+
   document.getElementById('pipelineSteps').style.display = 'block';
   document.getElementById('pipelineResult').innerHTML = '';
-  ['step1','step2','step3','step4','step5'].forEach(s => { const el=document.getElementById(s); el.className='step'; el.querySelector('.step-icon').textContent=s.replace('step',''); });
+
+  ['step1','step2','step3','step4','step5'].forEach(s => {
+    const el = document.getElementById(s);
+    el.className = 'step';
+    el.querySelector('.step-icon').textContent = s.replace('step','');
+  });
 
   setStep('step1','active');
+
   try {
     await delay(300); setStep('step1','done'); setStep('step2','active');
     await delay(300); setStep('step2','done'); setStep('step3','active');
 
-    const res = await fetch(`${API_URL}/extract`, {
+    // 🔥 CALL N8N WEBHOOK DIRECTLY
+    const res = await fetch("https://sheshaadri.app.n8n.cloud/webhook/clara/demo", {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({transcript, call_type: callType})
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ transcript, call_type: callType })
     });
+
     const data = await res.json();
+
     if (!data.success) throw new Error(data.error || 'Pipeline failed');
 
     setStep('step3','done'); setStep('step4','active');
     await delay(500); setStep('step4','done'); setStep('step5','active');
     await delay(300); setStep('step5','done');
 
-    const memo = data.memo;
-    if (!ACCOUNTS.find(a => a.id === memo.account_id)) {
+    // 🔥 EXPECT DATA FROM N8N
+    const memo = data.memo || {};
+    const accountId = memo.account_id || data.account_id || "unknown";
+
+    if (!ACCOUNTS.find(a => a.id === accountId)) {
       ACCOUNTS.push({
-        id: memo.account_id,
-        company: memo.company_name || 'Unknown Company',
-        hasV1: true, hasV2: false,
-        retell_agent_id: data.retell?.agent_id || null,
+        id: accountId,
+        company: memo.company_name || data.company || 'Unknown Company',
+        hasV1: true,
+        hasV2: false,
         v1: {
           business_hours: memo.business_hours || {},
           services: memo.services_supported || [],
           emergencies: memo.emergency_definition || [],
           emergency_contact: memo.emergency_routing_rules?.primary_contact,
           emergency_phone: memo.emergency_routing_rules?.phone_number,
-          pricing: { fee: memo.pricing?.service_call_fee, hourly: memo.pricing?.hourly_rate },
+          pricing: {
+            fee: memo.pricing?.service_call_fee,
+            hourly: memo.pricing?.hourly_rate
+          },
           special_clients: memo.special_clients || [],
           unknowns: memo.questions_or_unknowns || []
         },
-        v2: null, changes: []
+        v2: null,
+        changes: []
       });
+
       currentAccount = ACCOUNTS[ACCOUNTS.length - 1];
       renderSidebar();
     }
 
-    const retellUrl = data.retell?.retell_url;
-    const retellId = data.retell?.agent_id;
-
+    // 🔥 CLEAN RESULT UI (NO RETELL)
     document.getElementById('pipelineResult').innerHTML = `
       <div class="result-card">
         <div style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:14px">✅ Pipeline Complete</div>
-        <div class="field-row"><span class="field-label">company</span><span class="field-value">${memo.company_name||'extracted'}</span></div>
-        <div class="field-row"><span class="field-label">account_id</span><span class="field-value code">${memo.account_id}</span></div>
-        <div class="field-row"><span class="field-label">services extracted</span><span class="field-value">${(memo.services_supported||[]).length}</span></div>
-        <div class="field-row"><span class="field-label">open questions</span><span class="field-value" style="color:var(--warn)">${(memo.questions_or_unknowns||[]).length} flagged</span></div>
-        ${retellId?`<div class="field-row"><span class="field-label">retell agent</span><span class="field-value code"><a href="${retellUrl}" target="_blank" style="color:var(--accent);text-decoration:none">${retellId.slice(0,26)}... ↗</a></span></div>`:''}
-        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
-          <button class="run-btn" onclick="selectAccount('${memo.account_id}');showView('account',document.querySelectorAll('.nav-item')[2])">View Account →</button>
-          ${retellUrl?`<a href="${retellUrl}" target="_blank" style="background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.3);padding:9px 16px;border-radius:8px;font-size:12px;font-weight:600;text-decoration:none">Open in Retell ↗</a>`:''}
+
+        <div class="field-row">
+          <span class="field-label">company</span>
+          <span class="field-value">${memo.company_name || data.company || 'extracted'}</span>
         </div>
-      </div>`;
+
+        <div class="field-row">
+          <span class="field-label">account_id</span>
+          <span class="field-value code">${accountId}</span>
+        </div>
+
+        <div class="field-row">
+          <span class="field-label">services extracted</span>
+          <span class="field-value">${(memo.services_supported || []).length}</span>
+        </div>
+
+        <div class="field-row">
+          <span class="field-label">open questions</span>
+          <span class="field-value" style="color:var(--warn)">
+            ${(memo.questions_or_unknowns || []).length} flagged
+          </span>
+        </div>
+
+        ${data.issue_url ? `
+        <div class="field-row">
+          <span class="field-label">github issue</span>
+          <span class="field-value">
+            <a href="${data.issue_url}" target="_blank" style="color:var(--accent);text-decoration:none">
+              View Issue ↗
+            </a>
+          </span>
+        </div>` : ''}
+
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="run-btn"
+            onclick="selectAccount('${accountId}');showView('account',document.querySelectorAll('.nav-item')[2])">
+            View Account →
+          </button>
+        </div>
+      </div>
+    `;
+
   } catch(e) {
-    ['step1','step2','step3','step4','step5'].forEach(s => { if (document.getElementById(s).classList.contains('active')) setStep(s,'error'); });
+    ['step1','step2','step3','step4','step5'].forEach(s => {
+      if (document.getElementById(s).classList.contains('active')) setStep(s,'error');
+    });
+
     document.getElementById('pipelineResult').innerHTML = `
-      <div style="background:rgba(255,92,92,.06);border:1px solid rgba(255,92,92,.2);border-radius:10px;padding:14px 18px;margin-top:12px;font-size:13px;color:var(--danger)">
-        ⚠ ${e.message}<br><span style="color:var(--muted);font-size:11px;margin-top:4px;display:block">Make sure Render backend is deployed and running.</span>
+      <div style="background:rgba(255,92,92,.06);border:1px solid rgba(255,92,92,.2);
+      border-radius:10px;padding:14px 18px;margin-top:12px;font-size:13px;color:var(--danger)">
+        ⚠ ${e.message}<br>
+        <span style="color:var(--muted);font-size:11px;margin-top:4px;display:block">
+          Check if n8n workflow is active and webhook URL is correct.
+        </span>
       </div>`;
   }
-  btn.disabled = false; btn.textContent = '▶ Run Pipeline';
-}
 
+  btn.disabled = false;
+  btn.textContent = '▶ Run Pipeline';
+}
 // ── ACCOUNT DETAIL ────────────────────────────────────────────────────────
 function renderAccount() {
   const a = currentAccount, d = a.v2 || a.v1;
