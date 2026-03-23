@@ -311,7 +311,7 @@ function renderAccount(){
         <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
           ${a.hasV1?'<span class="badge v1" style="padding:4px 10px;font-size:10px">v1 demo</span>':''}
           ${a.hasV2?'<span class="badge v2" style="padding:4px 10px;font-size:10px">v2 onboarded</span>':'<span style="background:rgba(255,179,71,.1);color:var(--warn);font-size:10px;padding:4px 10px;border-radius:4px">⏳ awaiting onboarding</span>'}
-          ${a.retell_agent_id?`<a href="https://app.retellai.com/agent/${a.retell_agent_id}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);color:#a78bfa;padding:4px 12px;border-radius:6px;font-size:11px;text-decoration:none">🔗 View on Retell ↗</a>`:''}
+          ${a.retell_agent_id?`<a href="https://dashboard.retellai.com/agents/${a.retell_agent_id}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);color:#a78bfa;padding:4px 12px;border-radius:6px;font-size:11px;text-decoration:none">🔗 View on Retell ↗</a>`:''}
           ${a.hasV2?`<button onclick="showView('diff',document.querySelectorAll('.nav-item')[3])" style="background:rgba(0,217,163,.08);border:1px solid rgba(0,217,163,.2);color:var(--accent);padding:4px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit">🔀 View Diff</button>`:''}
         </div>
       </div>
