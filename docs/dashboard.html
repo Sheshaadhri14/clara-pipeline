@@ -466,7 +466,7 @@ function renderAccount() {
         <div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:4px">ACCOUNT DETAIL</div>
         <div style="font-size:20px;font-weight:700">${a.company}</div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px">${a.id}</div>
-        ${a.retell_agent_id && a.retell_agent_id.startsWith('agent_')? `<a href="https://dashboard.retellai.com/agents/${a.retell_agent_id}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);color:#a78bfa;padding:4px 12px;border-radius:6px;font-size:11px;text-decoration:none">🔗 View on Retell ↗</a>`:''}
+        ${a.retell_agent_id && a.retell_agent_id.startsWith('agent_')?`< a href="https://dashboard.retellai.com/agents/${a.retell_agent_id}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);color:#a78bfa;padding:4px 12px;border-radius:6px;font-size:11px;text-decoration:none">🔗 View on Retell ↗</a>`:''}
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
         <div class="card">
