@@ -1,0 +1,187 @@
+{
+  "name": "Clara Pipeline - Demo Call",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "clara/demo",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c0bb380c-cf43-48cd-817f-7410df53f761",
+      "name": "Webhook",
+      "webhookId": "7b7a632f-952d-46b3-b195-8b2e949fc8a6"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\nconst transcript = body.transcript || '';\nconst callType = body.call_type || 'demo';\n\nif (!transcript) {\n  throw new Error('No transcript provided in request body');\n}\n\nconst response = await this.helpers.httpRequest({\n  method: 'POST',\n  url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',\n  qs: { key: $env.GEMINI_API_KEY },\n  headers: { 'Content-Type': 'application/json' },\n  body: {\n    contents: [{\n      parts: [{\n        text: `You are a configuration assistant for Clara Answers.\\nExtract ONLY explicitly stated facts. Never invent missing info.\\nReturn ONLY valid JSON. No markdown. No explanation.\\n\\nUse this structure:\\n{\\n  \"company_name\": null,\\n  \"business_hours\": {\"days\": null, \"start\": null, \"end\": null, \"timezone\": null},\\n  \"office_address\": null,\\n  \"services_supported\": [],\\n  \"emergency_definition\": [],\\n  \"emergency_routing_rules\": {\"primary_contact\": null, \"phone_number\": null, \"fallback\": null},\\n  \"non_emergency_routing_rules\": {\"action\": null, \"details\": null},\\n  \"call_transfer_rules\": {\"timeout_seconds\": null, \"fail_message\": null},\\n  \"special_clients\": [],\\n  \"pricing\": {\"service_call_fee\": null, \"hourly_rate\": null, \"mention_to_caller\": null},\\n  \"notification_preferences\": {\"email\": null, \"phone\": null},\\n  \"integration_constraints\": [],\\n  \"after_hours_flow_summary\": null,\\n  \"office_hours_flow_summary\": null,\\n  \"questions_or_unknowns\": [],\\n  \"notes\": null\\n}\\n\\nTRANSCRIPT:\\n${transcript}`\n      }]\n    }]\n  },\n  json: true\n});\n\nlet raw = response.candidates?.[0]?.content?.parts?.[0]?.text?.trim();\nif (!raw) throw new Error('Empty response from Gemini API');\nraw = raw.replace(/^```json\\s*/, '').replace(/\\s*```$/, '');\n\nlet memo;\ntry { memo = JSON.parse(raw); }\ncatch (err) { throw new Error('Failed to parse Gemini JSON: ' + raw); }\n\nconst slug = (memo.company_name || 'unknown').toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 24);\nmemo.account_id = slug + '-' + Date.now().toString(16).slice(-4);\nmemo._meta = { extracted_at: new Date().toISOString(), call_type: callType, version: 'v1' };\n\nreturn [{ json: { memo, transcript, call_type: callType } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "7afccc7e-f720-4461-9a40-345403ef235e",
+      "name": "Extract Memo"
+    },
+    {
+      "parameters": {
+        "jsCode": "const { memo } = $input.first().json;\n\nconst company = memo.company_name || 'our company';\nconst bh = memo.business_hours || {};\nconst days = bh.days || 'Monday to Friday';\nconst start = bh.start || '9:00 AM';\nconst end = bh.end || '5:00 PM';\nconst tz = bh.timezone || 'local time';\nconst routing = memo.emergency_routing_rules || {};\nconst phone = routing.phone_number || '[ON_CALL_NUMBER]';\nconst contact = routing.primary_contact || 'on-call team';\nconst timeout = (memo.call_transfer_rules || {}).timeout_seconds || 60;\nconst pricing = memo.pricing || {};\n\nlet pricingSection = '';\nif (pricing.service_call_fee) {\n  pricingSection = `\\n# PRICING (only mention if caller asks)\\n- Service call fee: ${pricing.service_call_fee}\\n- Hourly rate: ${pricing.hourly_rate}\\n- Do NOT mention on every call.`;\n}\n\nconst systemPrompt = `# IDENTITY\\nYou are Clara, AI voice assistant for ${company}.\\nNever say you are an AI unless asked.\\nKeep responses short — this is a phone call.\\n\\n# BUSINESS HOURS\\n${days}, ${start} to ${end} ${tz}\\n${pricingSection}\\n\\n---\\n\\n# BUSINESS HOURS FLOW\\nStep 1 - Greeting: \"Thank you for calling ${company}, this is Clara. How can I help?\"\\nStep 2 - Understand purpose: emergency, service request, or inquiry?\\nStep 3 - Collect name and phone number. Repeat number back to confirm.\\nStep 4 - Transfer to ${contact} at ${phone}. Wait ${timeout} seconds.\\nStep 5 - If transfer fails: \"I couldn't reach someone right now. Your info is noted and someone will call you back shortly.\"\\nStep 6 - \"Is there anything else?\" → \"Thank you for calling ${company}. Have a great day!\"\\n\\n---\\n\\n# AFTER HOURS FLOW\\nStep 1 - \"Thank you for calling ${company}. Office is closed. This is Clara, how can I help?\"\\nStep 2 - Determine if emergency or non-emergency.\\nStep 3a - IF EMERGENCY: collect name, phone, address → transfer to ${phone}\\n         If fails: \"Your call is flagged urgent. Someone calls you back very shortly.\"\\nStep 3b - IF NOT EMERGENCY: collect details → \"We will follow up next business day.\"\\nStep 4 - \"Is there anything else?\" → \"Thank you. Have a good night!\"\\n\\n---\\n\\n# RULES\\n- Never ask more than 2 questions at once\\n- Never mention tools, functions or systems\\n- Always repeat phone numbers back to confirm\\n- Be warm and calm always`;\n\nconst spec = {\n  agent_name: `Clara - ${company}`,\n  version: memo._meta?.version || 'v1',\n  voice_style: { tone: 'warm, professional, calm', pace: 'natural, not rushed' },\n  system_prompt: systemPrompt,\n  key_variables: {\n    company_name: company,\n    timezone: bh.timezone,\n    business_days: bh.days,\n    emergency_phone: phone,\n    transfer_timeout_seconds: timeout\n  },\n  call_transfer_protocol: { method: 'warm_transfer', timeout_seconds: timeout, announcement: 'Please hold while I connect you.' },\n  fallback_protocol: { trigger: 'Transfer fails', message: \"I'm sorry I couldn't reach someone. Your info is recorded and someone will follow up soon.\" },\n  questions_or_unknowns: memo.questions_or_unknowns || [],\n  _meta: { generated_at: new Date().toISOString(), account_id: memo.account_id }\n};\n\nreturn [{ json: { memo, spec } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "cefb8785-d52d-474c-a35b-7d3631ba8212",
+      "name": "Generate agent spec"
+    },
+    {
+      "parameters": {
+        "jsCode": "const { memo, spec } = $input.first().json;\n\nconst RETELL_API_KEY = $env.RETELL_API_KEY;\n\nif (!RETELL_API_KEY) {\n  throw new Error('RETELL_API_KEY not set in n8n environment variables');\n}\n\nconst headers = {\n  'Authorization': `Bearer ${RETELL_API_KEY}`,\n  'Content-Type': 'application/json'\n};\n\n// Step 1 — Create LLM\nconst llmResponse = await this.helpers.httpRequest({\n  method: 'POST',\n  url: 'https://api.retellai.com/create-retell-llm',\n  headers,\n  body: {\n    model: 'claude-4.5-sonnet',\n    system_prompt: spec.system_prompt,\n    temperature: 0,\n    max_tokens: 200\n  },\n  json: true\n});\n\nconst llmId = llmResponse.llm_id;\nif (!llmId) throw new Error('LLM creation failed: ' + JSON.stringify(llmResponse));\n\n// Step 2 — Create Agent\nconst company = memo.company_name || 'the business';\nconst agentResponse = await this.helpers.httpRequest({\n  method: 'POST',\n  url: 'https://api.retellai.com/create-agent',\n  headers,\n  body: {\n    agent_name: `Clara - ${company}`,\n    response_engine: {\n      type: 'retell-llm',\n      llm_id: llmId\n    },\n    voice_id: '11labs-Adrian',\n    language: 'en-US',\n    begin_message: `Thank you for calling ${company}, this is Clara. How can I help you today?`\n  },\n  json: true\n});\n\nconst agentId = agentResponse.agent_id;\nif (!agentId) throw new Error('Agent creation failed: ' + JSON.stringify(agentResponse));\n\nconst retellResult = {\n  success: true,\n  agent_id: agentId,\n  llm_id: llmId,\n  retell_url: `https://app.retellai.com/agent/${agentId}`\n};\n\nreturn [{ json: { memo, spec, retell: retellResult } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "7877a4f9-5bbc-41f1-9e83-620061d3da81",
+      "name": "Create Retell Agent"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "owner": {
+          "__rl": true,
+          "value": "Sheshaadhri14",
+          "mode": "list",
+          "cachedResultName": "Sheshaadhri14",
+          "cachedResultUrl": "https://github.com/Sheshaadhri14"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "clara-pipeline",
+          "mode": "list",
+          "cachedResultName": "clara-pipeline",
+          "cachedResultUrl": "https://github.com/Sheshaadhri14/clara-pipeline"
+        },
+        "title": "={{ \"New Account: \" + $json.memo.company_name }}\n",
+        "body": "=={{ \"**Account ID:** \" + $json.memo.account_id + \"\\n\\n**Retell Agent ID:** \" + $json.retell.agent_id + \"\\n\\n**View on Retell:** \" + $json.retell.retell_url + \"\\n\\n**Version:** v1\\n\\n**Open Questions:**\\n\" + ($json.memo.questions_or_unknowns || []).join(\"\\n\") }}",
+        "labels": [],
+        "assignees": []
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        0
+      ],
+      "id": "0b9e84fa-ab96-42ef-828b-b042ceef7f2d",
+      "name": "Create an issue",
+      "webhookId": "5db19ff0-849b-4d01-8583-62b8261d93f6",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "NhQZyUijXkKrWbz1",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ \nJSON.stringify({\n  success: true,\n  account_id: $('Create Retell Agent').item.json.memo.account_id,\n  company: $('Create Retell Agent').item.json.memo.company_name,\n  retell_agent_id: $('Create Retell Agent').item.json.retell.agent_id,\n  retell_url: $('Create Retell Agent').item.json.retell.retell_url,\n  issue_number: $json.number,\n  issue_url: $json.html_url,\n  version: $('Create Retell Agent').item.json.memo._meta.version\n})\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "bfd390a3-e3d6-471a-b3fb-05d50017e83e",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Memo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Memo": {
+      "main": [
+        [
+          {
+            "node": "Generate agent spec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate agent spec": {
+      "main": [
+        [
+          {
+            "node": "Create Retell Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Retell Agent": {
+      "main": [
+        [
+          {
+            "node": "Create an issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an issue": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "d6ba5183-e1b9-4c5e-8dcb-cc61875982ad",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2139fabc93646f7628b2ff1d6f0bc100427c7bc128ae4a3819106c826581309f"
+  },
+  "id": "ylzznWWo0jcqDTD1",
+  "tags": []
+}
