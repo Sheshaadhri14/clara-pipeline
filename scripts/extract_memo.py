@@ -154,6 +154,31 @@ def extract_memo(transcript_path: str, call_type: str = "demo") -> dict:
 
     print(f"[OK] Saved to {out_path}")
 
+    # Generate agent spec
+    from generate_agent_spec import build_agent_spec, create_retell_agent
+    spec = build_agent_spec(memo, version)
+
+    spec_path = out_dir / "agent_spec.json"
+    with open(spec_path, "w", encoding="utf-8") as f:
+        json.dump(spec, f, indent=2)
+    print(f"[OK] Agent spec saved to {spec_path}")
+
+    retell_key = os.getenv("RETELL_API_KEY")
+    if retell_key:
+        print("\n Creating agent on Retell...")
+        retell_result = create_retell_agent(spec, retell_key)
+        if retell_result["success"]:
+            print(f" Retell agent created!")
+            print(f"   Agent ID : {retell_result['agent_id']}")
+            print(f"   View at  : {retell_result['retell_url']}")
+            retell_path = out_dir / "retell_agent.json"
+            with open(retell_path, "w", encoding="utf-8") as f:
+                json.dump(retell_result, f, indent=2)
+        else:
+            print(f"  Retell error: {retell_result['error']}")
+    else:
+        print("\n  No RETELL_API_KEY — skipping Retell push")
+
     return memo
 
 
