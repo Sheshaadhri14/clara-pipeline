@@ -3,7 +3,6 @@
 Automates the full journey from call transcript → Retell agent 
 configuration → onboarding update → versioned v2 agent.
 
-Built for the Clara Answers intern assignment.
 
 ---
 
